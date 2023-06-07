@@ -1,30 +1,39 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { startLogout } from '../../actions/auth';
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { startLogout } from "../../actions/auth";
 
 export const Navbar = () => {
+  const [isOnline, setIsOnline] = useState(window.navigator.onLine);
 
-    const dispatch = useDispatch();
-    const { name } = useSelector( state => state.auth );
+  window.addEventListener("offline", () => {
+    setIsOnline(false);
+  });
 
-    const handleLogout = () => {
-        dispatch( startLogout() );
-    }
+  window.addEventListener("online", () => {
+    setIsOnline(true);
+  });
 
-    return (
-        <div className="navbar navbar-dark bg-dark mb-4">
-            <span className="navbar-brand">
-                { name }
-            </span>
-            
-            <button 
-                className="btn btn-outline-danger"
-                onClick={ handleLogout }
-            >
-                <i className="fas fa-sign-out-alt"></i>
-                <span> Salir</span>
-            </button>
+  const dispatch = useDispatch();
+  const { name } = useSelector((state) => state.auth);
 
-        </div>
-    )
-}
+  const handleLogout = () => {
+    dispatch(startLogout());
+  };
+
+  return (
+    <div className="navbar navbar-dark bg-dark mb-4">
+      <span className="navbar-brand">{name}</span>
+
+      {isOnline ? (
+        <span className="badge badge-pill badge-success">Online</span>
+      ) : (
+        <span className="badge badge-pill badge-danger">Offline - peticiones seran guardadas</span>
+      )}
+
+      <button className="btn btn-outline-danger" onClick={handleLogout}>
+        <i className="fas fa-sign-out-alt"></i>
+        <span> Salir</span>
+      </button>
+    </div>
+  );
+};
